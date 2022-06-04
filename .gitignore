@@ -1,0 +1,14 @@
+Catherine.pyproj
+Catherine.sln
+**/__pycache__
+.git
+.vs
+env
+
+docs/_upload.py
+local_storage
+upload.cmd
+_data.json
+main.py
+
+test.py
