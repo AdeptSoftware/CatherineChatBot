@@ -1,14 +1,18 @@
+.git
+upload.cmd
+
+.idea
+venv
+
+.vs
 Catherine.pyproj
 Catherine.sln
-**/__pycache__
-.git
-.vs
 env
 
-docs/_upload.py
+**/__pycache__
 local_storage
-upload.cmd
+
+docs/_upload.py
 _data.json
 main.py
-
 test.py

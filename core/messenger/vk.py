@@ -31,7 +31,7 @@ class VkUserProfile(IUserProfile):
 				result = self._data["first_name"]
 			elif ref_type == REF_FULLNAME:
 				result = self._data["first_name"]+' '+self._data["last_name"]
-			elif ref_type == REF_NICK:
+			elif ref_type == REF_NICKNAME:
 				result = "?"
 			if result and ref_type == REF_LINK:
 				return "[{0}|{1}]".format(self._id, result)
@@ -156,6 +156,7 @@ class VkMethodCaller(_e.TaskManager):
 
 class VkMessenger(IMessenger):
 	def __init__(self, cfg):
+		super().__init__()
 		self._caller	= VkMethodCaller("vk", cfg["delay"])
 		self._mgr		= _mgr.CommandManager(cfg["dialogs"])
 		self._on		= False

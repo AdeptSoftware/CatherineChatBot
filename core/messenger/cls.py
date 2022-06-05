@@ -30,10 +30,10 @@ GENDER_WOMAN			= 1
 # ======== ========= ========= ========= ========= ========= ========= =========
 
 class IMessenger:
-	def __init__(self, cfg):
+	def __init__(self):
 		pass
 
-	def msg(self):
+	def msg(self, target):
 		# создает объект для отправки сообщений
 		pass
 
@@ -50,18 +50,18 @@ class IMessage:
 		pass
 
 	def type(self):
-		# должен вернуть ID используемого мессенджера (см. начало файла)
+		# Должен вернуть ID используемого мессенджера (см. начало файла)
 		pass
 
-	@property
+	# @property
 	def id(self):
 		pass
 
-	@property
+	# @property
 	def chat_id(self):
 		pass
 
-	@property
+	# @property
 	def text(self):
 		pass
 
@@ -79,7 +79,7 @@ class Answer:
 	def is_ready(self):
 		return len(self._att) != 0
 
-	# mode - добавлять упоминания (см. начало файла)
+	# Mode - добавлять упоминания (см. начало файла)
 	def set_reference_mode(self, mode):
 		self._ref = mode
 
@@ -97,14 +97,14 @@ class Answer:
 # ======== ========= ========= ========= ========= ========= ========= =========
 
 class IUserProfile:
-	@property
+	# @property
 	def id(self):
 		pass
 
-	def ref(self):
+	def ref(self, ref_type):
 		pass
 
-	@property
+	# @property
 	def gender(self):
 		pass
 

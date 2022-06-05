@@ -1,5 +1,5 @@
 # 27.05.2022-28.05.2022
-from core.messenger.discord		import DiscordMessenger
+from core.messenger.discоrd		import DiscordMessenger
 from core.thread				import run_thread
 import core.lang				as _lang
 import time

@@ -1,8 +1,7 @@
 # 24.05.2022-27.05.2022
 import core.commands.manager	as _mgr
 from core.messenger.cls			import *
-from core.thread				import run_thread
-from discord.ext				import tasks, commands
+from discord.ext				import commands
 import discord
 import asyncio
 
@@ -28,7 +27,7 @@ class DiscordUserProfile(IUserProfile):
 		if ref_type != REF_NONE:
 			if ref_type == REF_NAME or ref_type == REF_FULLNAME:
 				result = self._ctx.author.display_name
-			elif ref_type == REF_NICK:
+			elif ref_type == REF_NICKNAME:
 				result = self._ctx.author.nick or "?"
 			if result and ref_type == REF_LINK:
 				return '@' + self._ctx.author.display_name
@@ -82,8 +81,8 @@ class DiscordAnswer(Answer):
 		embeds = []
 		if ATT_IMAGES in self._att:
 			for img in self._att[ATT_IMAGES]:
-				embed = discord.Embed(color = 0xFF9900, title = img[IMAGE_DESC])
-				embed.set_image(url = img[IMAGE_URL])
+				embed = discord.Embed(color=0xFF9900, title=img[IMAGE_DESC])
+				embed.set_image(url=img[IMAGE_URL])
 				embeds += [embed]
 		self._att.clear()
 		# Отправка сообщений
@@ -91,10 +90,10 @@ class DiscordAnswer(Answer):
 		if embeds:
 			embed = embeds.pop(0)
 			for e in embeds:
-				run_coroutine(self._ctx.channel.send("", embed = e))
+				run_coroutine(self._ctx.channel.send("", embed=e))
 		if self._reply:
-			return self._ctx.reply(text, embed = embed)
-		return self._ctx.channel.send(text, embed = embed)
+			return self._ctx.reply(text, embed=embed)
+		return self._ctx.channel.send(text, embed=embed)
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
@@ -105,8 +104,10 @@ class _FakeContext:
 
 class DiscordMessenger(IMessenger):
 	def __init__(self, cfg):
+		super().__init__()
 		self._mgr		= _mgr.CommandManager(cfg["servers"])
 		self._bot		= commands.Bot(command_prefix=cfg["prefix"])
+		self._on 		= False
 		self._cfg		= cfg
 
 		@self._bot.event

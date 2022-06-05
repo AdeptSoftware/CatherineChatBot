@@ -41,7 +41,7 @@ class AbstractStorageObject:
 				self._obj.value = json.loads(string.encode(FILE_ENCODING))
 		return True
 
-	def _read(self, path):
+	def _read(self, path) -> str:
 		pass
 
 	def _write(self, path, string):
@@ -51,7 +51,7 @@ class AbstractStorageObject:
 
 # path - относительный путь (по отношению к root)
 class IStorageManager:
-	def create(self):								   # агрументы не добавлять!
+	def create(self):								   # аргументы не добавлять!
 		pass
 
 	def create_file(self, path, string=""):

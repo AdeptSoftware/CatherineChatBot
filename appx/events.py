@@ -35,7 +35,8 @@ def vk_timetable(event):
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
-class Dictionary(dict): pass
+class Dictionary(dict):
+	pass
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
@@ -44,6 +45,5 @@ def loader(app, event):
 	if event["type"] == TYPE_VK_TIMETABLE:
 		event["data"].msgr = app.messenger(cls=VkMessenger)
 		app.events.new(vk_timetable, event)
-
 
 # ======== ========= ========= ========= ========= ========= ========= =========

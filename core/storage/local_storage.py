@@ -8,7 +8,6 @@ def _write(path, string):
 	with open(path, 'w', encoding=FILE_ENCODING) as f:
 		f.write(string)
 		return True
-	return False
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
@@ -16,7 +15,6 @@ class LocalStorageObject(AbstractStorageObject):
 	def _read(self, path):
 		with open(self._path, 'r', encoding=FILE_ENCODING) as f:
 			return f.read()
-		return None
 
 	def _write(self, path, string):
 		return _write(path, string)

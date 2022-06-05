@@ -15,7 +15,7 @@ class CommandManager:
 			# answer.attach(txt=answer.msg.text)
 			return answer.is_ready()
 		except Exception as err:
-			core.thread.G_ON_ERROR(err)
+			G_ON_ERROR(err)
 			return False
 
 # ======== ========= ========= ========= ========= ========= ========= =========
