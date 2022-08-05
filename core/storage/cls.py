@@ -1,4 +1,4 @@
-# 25.05.2022 Базовые классы для работы с хранилищем данных
+# Базовые классы для работы с хранилищем данных
 import core.safe
 import json
 
@@ -64,7 +64,9 @@ class IStorageManager:
 		pass
 
 	# На основе существующего файла
-	def create_storage_object(self, path, is_json=True):
+	def create_storage_object(self, path, is_json=True) -> AbstractStorageObject:
 		pass
+
+	cso = create_storage_object							# shortcut
 
 # ======== ========= ========= ========= ========= ========= ========= =========

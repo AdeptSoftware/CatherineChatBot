@@ -1,4 +1,4 @@
-# 25.05.2022
+# Классы для работы с событиями
 import core.thread
 import core.safe
 import time
@@ -44,6 +44,10 @@ class EventManager(core.thread.BaseThread):
         with self._events:
             self._events.clear()
         super().stop()
+
+    def set_update_time(self, sec):
+        if sec > 0:
+            self._time_update = sec
 
     # name - уникальное имя события (если такое есть - перезапишется)
     # cooldown - время между событиями (sec)

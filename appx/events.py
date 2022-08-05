@@ -1,22 +1,24 @@
 # 03.06.2022
-from core.messenger.vk			import VkMessenger
 import datetime
+from core.time import timezone
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 # Типы событий
 
-TYPE_VK_TIMETABLE = 0					# Вывод текста по расписанию
+TYPE_TIMETABLE = 0					# Вывод текста по расписанию
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
-def vk_timetable(event):
+def timetable(event):
 	data = event["data"]
 	if "current" in event:
-		data.msgr.msg(data["pid"]).send(event["current"])
+		ans = data["msgr"].create_answer(data["pid"])
+		ans.set_text(event["current"])
+		data["msgr"].send(ans.get())
 		event["current"] = None
 	# Определение времени отправки следующего сообщения (z)
 	days = 0
-	now = datetime.datetime.now() + datetime.timedelta(hours=data["timezone"])
+	now = datetime.datetime.now() + datetime.timedelta(hours=data["timezone"]-timezone())
 	while days < 8:			# Неделя+1
 		for msg in data["lst"]:
 			z = datetime.datetime(now.year, now.month, now.day, msg["hour"], msg["minute"])
@@ -35,15 +37,13 @@ def vk_timetable(event):
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
-class Dictionary(dict):
-	pass
-
-# ======== ========= ========= ========= ========= ========= ========= =========
-
-def loader(app, event):
-	event["data"] = Dictionary(event["data"])
-	if event["type"] == TYPE_VK_TIMETABLE:
-		event["data"].msgr = app.messenger(cls=VkMessenger)
-		app.events.new(vk_timetable, event)
+def loader(appdata, filename="events.json"):
+	data = appdata.storage.create_storage_object(filename).get()
+	with data:
+		appdata.events.set_update_time(data["update"])
+		for event in data["events"]:
+			if event["type"] == TYPE_TIMETABLE:
+				event["data"]["msgr"] = appdata.messenger(event["msgr_id"])
+				appdata.events.new(timetable, event)
 
 # ======== ========= ========= ========= ========= ========= ========= =========

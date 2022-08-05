@@ -1,20 +1,11 @@
-# 25.05.2022
-from core.storage.cls	import *
-from core.safe			import SafeVariable
-import yadisk
-import io
+# Классы для работы с облачным хранилищем
+from core.storage.cls			import *
+from core.wrappers.yandex_disk	import *
+from core.safe					import SafeVariable
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
-def _write(api, path, string):
-	with api:
-		bytes_io = io.BytesIO(string.encode())
-		api.upload(bytes_io, path, overwrite=True)
-		bytes_io.close()
-		return True
-
-# ======== ========= ========= ========= ========= ========= ========= =========
-
+# Благодаря этому объекту, доступ к общим для потоков данных - безопасен
 # Все файлы, привязанные к таким объектам должны существовать на момент создания
 class YandexStorageObject(AbstractStorageObject):
 	def __init__(self, api, path, default):
@@ -23,20 +14,18 @@ class YandexStorageObject(AbstractStorageObject):
 
 	def _read(self, path):
 		with self._api:
-			bytes_io = io.BytesIO(b"")
-			self._api.download(path, bytes_io)
-			string = bytes_io.getvalue().decode(FILE_ENCODING, 'backslashreplace')
-			bytes_io.close()
-			return string
+			return self._api.download(path)
 
 	def _write(self, path, string):
-		return _write(self._api, path, string)
+		with self._api:
+			return self._api.upload(path, string)
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
-# path - относительный путь (по отношению к root)
+# Класс, управляющий облачным хранилищем.
 class YandexStorageManager:
-	def __init__(self, token, root):
+	# path - относительный путь (по отношению к root)
+	def __init__(self, root, token):
 		self.cso	= self.create_storage_object
 		self._token = token
 		self._root	= root
@@ -44,22 +33,22 @@ class YandexStorageManager:
 
 	def create(self):
 		if self._api is None:
-			self._api = SafeVariable(yadisk.YaDisk(token=self._token))
+			self._api = SafeVariable(YandexDiskAPI(self._token, FILE_ENCODING))
 		return self._api.check_token()
 
 	def create_file(self, path, string=""):
-		return _write(self._api, self._root+path, string)
+		with self._api:
+			return self._api.upload(self._root+path, string)
 
 	def mkdir(self, path):
 		with self._api:
-			self._api.mkdir(self._root+path)
+			return self._api.mkdir(self._root+path)
 
 	def exists(self, path):
 		with self._api:
-			self._api.exists(self._root+path)
+			return self._api.exists(self._root+path)
 
-	# На основе существующего файла
-	def create_storage_object(self, path, is_json=True):
+	def create_storage_object(self, path, is_json=True) -> AbstractStorageObject:
 		if is_json:
 			return YandexStorageObject(self._api, self._root+path, {})
 		else:

@@ -1,4 +1,4 @@
-# 25.05.2022
+# Классы для работы с локальным хранилищем
 from core.storage.cls import *
 import os
 
@@ -11,6 +11,8 @@ def _write(path, string):
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
+# Благодаря этому объекту, доступ к общим для потоков данных - безопасен
+# Все файлы, привязанные к таким объектам должны существовать на момент создания
 class LocalStorageObject(AbstractStorageObject):
 	def _read(self, path):
 		with open(self._path, 'r', encoding=FILE_ENCODING) as f:
@@ -21,8 +23,9 @@ class LocalStorageObject(AbstractStorageObject):
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
-# path - относительный путь (по отношению к root)
+# Класс, управляющий локальным хранилищем.
 class LocalStorageManager(IStorageManager):
+	# path - относительный путь (по отношению к root)
 	def __init__(self, root):
 		self.cso = self.create_storage_object
 		self._root = root
@@ -39,8 +42,7 @@ class LocalStorageManager(IStorageManager):
 	def exists(self, path):
 		return os.path.exists(self._root+path)
 
-	# На основе существующего файла
-	def create_storage_object(self, path, is_json=True):
+	def create_storage_object(self, path, is_json=True) -> AbstractStorageObject:
 		if is_json:
 			return LocalStorageObject(self._root+path, {})
 		else:

@@ -1,5 +1,7 @@
 .git
-upload.cmd
+.gitignore
+z_automation.cmd
+z_upload.cmd
 
 .idea
 venv
@@ -13,6 +15,7 @@ env
 local_storage
 
 docs/_upload.py
+_google.json
 _data.json
 main.py
 test.py

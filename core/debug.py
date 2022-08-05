@@ -1,14 +1,14 @@
-# 26.05.2022 Объект-singleton
+# 26.05.2022 Объект-singleton. Для вывода логов и ошибок
 import core.thread
 import traceback
-import datetime
 import sys
+
+from core.time import time
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
 _G_OUTPUT_CONSOLE = True  # Дополнительно выводить логи в консоль
 _G_DEBUG          = None  # None - не инициализировано/без debug-режима
-_G_TIMEZONE = 0
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
@@ -17,13 +17,9 @@ class _Debug:
         self._so    = storage_object
         self._last  = None
 
-    @staticmethod
-    def time():
-        return datetime.datetime.now() + datetime.timedelta(hours=_G_TIMEZONE)
-
     # Выводит текст в логи
     def log(self, text, ignore_console=False):
-        text = self.time().strftime("[%Y-%m-%d %H:%M:%S]: ") + text
+        text = time().strftime("[%Y-%m-%d %H:%M:%S]: ") + text
         try:
             out = self._so.get()
             with out:
@@ -52,20 +48,12 @@ class _Debug:
                 string += str(data)
         self.log(string + '\n')
 
-    def catch(self, fn, data):
-        try:
-            fn(data)
-        except Exception as exc:
-            self.err()
-
-
 # ======== ========= ========= ========= ========= ========= ========= =========
 
-def init(storage_object, timezone):
-    global _G_DEBUG, _G_TIMEZONE
+def init(storage_object):
+    global _G_DEBUG
     if _G_DEBUG is None:
         _G_DEBUG = _Debug(storage_object)
-        _G_TIMEZONE = timezone
         # установка обработчиков ошибок
         core.thread.G_ON_ERROR = _G_DEBUG.err
 

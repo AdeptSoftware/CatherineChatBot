@@ -1,21 +1,10 @@
-# 24.05.2022
-from core.messenger.cls		import *
-from core.thread			import G_ON_ERROR
-
-# ======== ========= ========= ========= ========= ========= ========= =========
+# Заготовка под центр управлением командами
+from core.commands.context import Context
 
 class CommandManager:
-	def __init__(self, cmd_list):
-		pass
+    def __init__(self, configs):
+        pass
 
-	def on_message(self, answer : Answer):
-		try:
-			answer.user.stats = None
-			# Приступим к анализу сообщения
-			# answer.attach(txt=answer.msg.text)
-			return answer.is_ready()
-		except Exception as err:
-			G_ON_ERROR(err)
-			return False
-
-# ======== ========= ========= ========= ========= ========= ========= =========
+    def on_message(self, ctx: Context):
+        ctx.ans.set_text(ctx.msg.text)
+        return True
