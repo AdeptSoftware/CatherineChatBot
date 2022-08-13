@@ -1,53 +1,16 @@
 # Классы для работы с событиями
-import core.thread
-import core.safe
+import core.updater as _upd
 import time
-
-# ======== ========= ========= ========= ========= ========= ========= =========
-
-# Выполняет различные задачи (отправку сообщений и тд) сразу по возможности
-# Необходим, если задачи нужно выполнять с некоторой задержкой между ними
-class TaskManager(core.thread.BaseThread):
-    def __init__(self, name, time_update=0.5):
-        super().__init__(name, time_update)
-        self._queue = core.safe.SafeVariable([])
-        self._last = None
-
-    def stop(self):
-        with self._queue:
-            self._queue.clear()
-        super().stop()
-
-    def append(self, fn, obj):
-        with self._queue:
-            self._queue += [(fn, obj)]
-
-    def on_update(self):
-        with self._queue:
-            if len(self._queue) > 0:
-                self._last = self._queue.pop(0)
-                self._call(self._last[0], self._last[1])
-
-    def _call(self, fn, obj):
-        self._last[0](self._last[1])
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
 # Выполняет различные задачи в заданное время с определенным интервалом
 # В вызываемой функции возможна корректировка значений (кроме "next", т.к. оно рассчитывается позже)
-class EventManager(core.thread.BaseThread):
-    def __init__(self, name, time_update=1):
-        super().__init__(name, time_update)
-        self._events = core.safe.SafeVariable({})
-
-    def stop(self):
-        with self._events:
-            self._events.clear()
-        super().stop()
-
-    def set_update_time(self, sec):
-        if sec > 0:
-            self._time_update = sec
+class EventManager:
+    def __init__(self, updater, delay=15):
+        self._events = _upd.SafeVariable({})
+        self._delay  = delay
+        updater.append(self._update)
 
     # name - уникальное имя события (если такое есть - перезапишется)
     # cooldown - время между событиями (sec)
@@ -62,7 +25,7 @@ class EventManager(core.thread.BaseThread):
 
         with self._events:
             # Оборачиваем в SafeVariable, чтобы безопасно использовать get()
-            self._events[name] = core.safe.SafeVariable({
+            self._events[name] = _upd.SafeVariable({
                 "fn":       fn,
                 "data":     data,
                 "cooldown": cooldown,
@@ -105,21 +68,23 @@ class EventManager(core.thread.BaseThread):
         with self._events:
             return self._events.keys()
 
-    def on_update(self):
-        deleted = []
-        now = time.time()
-        with self._events:
-            for name in self._events.value:
-                event = self._events[name]
-                with event:
-                    if now >= event["next"]:
-                        if not event["fn"](event.value):
-                            # Удаляем события, которые вернули False
-                            deleted += [name]
-                        else:
-                            event["next"] = now + event["cooldown"]
-            if deleted:
-                for name in deleted:
-                    self._events.pop(name)
+    async def _update(self):
+        while True:
+            deleted = []
+            now = time.time()
+            with self._events:
+                for name in self._events.value:
+                    event = self._events[name]
+                    with event:
+                        if now >= event["next"]:
+                            if not event["fn"](event.value):
+                                # Удаляем события, которые вернули False
+                                deleted += [name]
+                            else:
+                                event["next"] = now + event["cooldown"]
+                if deleted:
+                    for name in deleted:
+                        self._events.pop(name)
+            await _upd.sleep(self._delay)
 
 # ======== ========= ========= ========= ========= ========= ========= =========

@@ -30,6 +30,10 @@ class VkMessage(AbstractMessage):
         return self._item["peer_id"]	# лучше передать peer_id
 
     @property
+    def from_id(self):
+        return self._item["from_id"]
+
+    @property
     def text(self):
         return self._item["text"]
 

@@ -27,6 +27,9 @@ class IMessage:
     def msg_id(self):
         pass
 
+    def from_id(self):
+        pass
+
     def chat_id(self):
         pass
 
@@ -190,12 +193,19 @@ class AbstractMessage(IMessage):
 
     # phrases - должен содержать lowercase фразы
     def contain_phrase(self, phrases):
-        length = len(self.__lower())
-        for phrase in phrases:
-            if phrase[0] in self._lower:
-                index = self._lower.index(phrase[0])
-                if 0 <= index < length-1 and self._lower[index+1] == phrase[1]:
-                    return True
+        _list = self.__lower()
+        _lenL = len(_list)
+        for i in range(0, _lenL):
+            for phrase in phrases:
+                _lenP  = len(phrase)
+                if i+_lenP <= _lenL:
+                    offset = 0
+                    for part in phrase:
+                        if part != _list[i+offset]:
+                            break
+                        offset += 1
+                    if offset == _lenP:
+                        return True
         return False
 
 # ========= ========= ========= ========= ========= ========= ========= =========

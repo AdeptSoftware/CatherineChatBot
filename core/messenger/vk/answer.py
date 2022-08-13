@@ -31,7 +31,7 @@ class VkAnswer(IAnswer):
             "forward":          self._reply,
             "message":          self._text,
             "dont_parse_links": True,
-            "random_id":        0,
+            "random_id":        0
         }
 
     def set_text(self, text):

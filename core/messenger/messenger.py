@@ -1,5 +1,6 @@
 # Производные классы предназначены для организации цикла сообщений
-from core.commands.manager import CommandManager, Context
+from core.commands.manager import CommandManager
+from core.commands.context import ContextEx
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
@@ -10,23 +11,23 @@ TYPE_DISCORD			= 1
 # ======== ========= ========= ========= ========= ========= ========= =========
 
 class AbstractMessenger:
-    def __init__(self, configs):
-        self._mngr      = CommandManager(configs)
-        self._configs   = configs
-        self._context   = None
+    def __init__(self, data, configs):
+        self._ctx = ContextEx(
+            CommandManager(data.updater, configs),
+            self,
+            data
+        )
 
+    # Уникальный идентификатор (см. выше: Message Types)
     def type_id(self):
         pass
 
-    def run(self):  # Аргументы не добавлять
-        pass
+    # Аргументы не добавлять!
+    async def run(self):
+        return False
 
     def create_answer(self, chat_id):
         pass
-
-    def set_appdata(self, appdata):
-        if self._context is None:
-            self._context = Context(appdata, self)
 
     def send(self, obj):
         pass

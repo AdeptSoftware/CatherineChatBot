@@ -1,9 +1,9 @@
 # 26.05.2022 Объект-singleton. Для вывода логов и ошибок
-import core.thread
+import core.updater
 import traceback
 import sys
 
-from core.time import time
+from core.xtime import time
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
@@ -55,7 +55,7 @@ def init(storage_object):
     if _G_DEBUG is None:
         _G_DEBUG = _Debug(storage_object)
         # установка обработчиков ошибок
-        core.thread.G_ON_ERROR = _G_DEBUG.err
+        core.updater.G_ON_ERROR = _G_DEBUG.err
 
 
 def get():

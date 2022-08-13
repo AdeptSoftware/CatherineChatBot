@@ -22,6 +22,10 @@ class DiscordMessage(AbstractMessage):
         return self._ctx.channel.id
 
     @property
+    def from_id(self):
+        return self._ctx.author.id
+
+    @property
     def text(self):
         return self._ctx.content
 

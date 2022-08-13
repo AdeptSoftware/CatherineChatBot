@@ -1,6 +1,6 @@
 # 03.06.2022
 import datetime
-from core.time import timezone
+from core.xtime import timezone
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 # Типы событий
@@ -37,13 +37,12 @@ def timetable(event):
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
-def loader(appdata, filename="events.json"):
-	data = appdata.storage.create_storage_object(filename).get()
+def loader(app, filename="events.json"):
+	data = app.storage.create_storage_object(filename).get()
 	with data:
-		appdata.events.set_update_time(data["update"])
-		for event in data["events"]:
+		for event in data.value:
 			if event["type"] == TYPE_TIMETABLE:
-				event["data"]["msgr"] = appdata.messenger(event["msgr_id"])
-				appdata.events.new(timetable, event)
+				event["data"]["msgr"] = app.messengers[event["msgr_id"]]
+				app.events.new(timetable, event)
 
 # ======== ========= ========= ========= ========= ========= ========= =========

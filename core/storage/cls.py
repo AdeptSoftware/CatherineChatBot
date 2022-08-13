@@ -1,5 +1,5 @@
 # Базовые классы для работы с хранилищем данных
-import core.safe
+from core.updater import SafeVariable
 import json
 
 # ======== ========= ========= ========= ========= ========= ========= =========
@@ -11,7 +11,7 @@ FILE_ENCODING = "utf-8"
 # Все файлы, привязанные к таким объектам должны существовать на момент создания
 class AbstractStorageObject:
 	def __init__(self, path, default):
-		self._obj  = core.safe.SafeVariable(default)
+		self._obj  = SafeVariable(default)
 		self._path = path
 		self.restore()
 	
@@ -20,14 +20,13 @@ class AbstractStorageObject:
 	
 	# save_as - задайте полный путь, чтобы сделать копию файла под другим именем 
 	def backup(self, save_as=None):
-		string = ""
 		with self._obj:
 			if type(self._obj.value) is str:
 				string = self._obj.value
 			else:
 				string = json.dumps(self._obj.value, ensure_ascii=False)
-		# запись и подготовка к ней
-		return self._write(save_as or self._path, string)
+			# запись и подготовка к ней
+			return self._write(save_as or self._path, string)
 
 	def restore(self):
 		string = self._read(self._path)

@@ -25,10 +25,18 @@ class LanguageResource(Resource):
     def __init__(self, filename, encoding="utf-8"):
         super().__init__(filename, encoding)
         _msg.set_catherine_names(self._data["CATHERINE"])
+        self._split()
 
     # Вернёт одну из строк в списке
     def rnd(self, key):
         index = random.randint(0, len(self._data[key])-1)
         return self._data[key][index]
+
+    def _split(self):
+        for key in self._data:
+            if key[0] == '#':
+                _list = []
+                _list += [value.lower().split(' ') for value in self._data[key]]
+                self._data[key] = _list
 
 # ======== ========= ========= ========= ========= ========= ========= =========

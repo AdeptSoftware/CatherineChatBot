@@ -1,7 +1,7 @@
 # Классы для работы с облачным хранилищем
-from core.storage.cls			import *
-from core.wrappers.yandex_disk	import *
-from core.safe					import SafeVariable
+from core.storage.cls			import AbstractStorageObject, FILE_ENCODING
+from core.wrappers.yandex_disk	import YandexDiskAPI
+from core.updater				import SafeVariable
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
