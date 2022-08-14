@@ -1,6 +1,7 @@
-# 03.06.2022
+#
+from core.updater 	import timezone
+from core.event		import Event
 import datetime
-from core.xtime import timezone
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 # Типы событий
@@ -9,16 +10,23 @@ TYPE_TIMETABLE = 0					# Вывод текста по расписанию
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
-def timetable(event):
-	data = event["data"]
-	if "current" in event:
+def timetable(event: Event):
+	""" Определяет время вывода событий и управляет их выводом
+
+	:param event: Текущее событие
+	:return: Всегда возвращает True, что запрещает EventManager'у удалять это
+		событие из очереди
+	"""
+	data = event.data
+	if event.reserve:
 		ans = data["msgr"].create_answer(data["pid"])
-		ans.set_text(event["current"])
+		ans.set_text(event.reserve)
 		data["msgr"].send(ans.get())
-		event["current"] = None
+		event.reserve = None
 	# Определение времени отправки следующего сообщения (z)
 	days = 0
-	now = datetime.datetime.now() + datetime.timedelta(hours=data["timezone"]-timezone())
+	offset = data["timezone"]-timezone()
+	now = datetime.datetime.now() + datetime.timedelta(hours=offset)
 	while days < 8:			# Неделя+1
 		for msg in data["lst"]:
 			z = datetime.datetime(now.year, now.month, now.day, msg["hour"], msg["minute"])
@@ -26,11 +34,11 @@ def timetable(event):
 			if msg["isoweekday"] is None or z.isoweekday() in msg["isoweekday"]:
 				if now > z:
 					continue
-				event["current"] = msg["params"]
+				event.reserve = msg["params"]
 				cooldown = (z-now).total_seconds()
 				if cooldown < 0:
 					cooldown = 5
-				event["cooldown"] = cooldown
+				event.cooldown = cooldown
 				return True
 		days += 1
 	return True
@@ -38,6 +46,11 @@ def timetable(event):
 # ======== ========= ========= ========= ========= ========= ========= =========
 
 def loader(app, filename="events.json"):
+	""" Загрузчик событий из json-файла
+
+	:param app: :class:`core.commands.context.CommonData`
+	:param filename: откуда загружаем события
+	"""
 	data = app.storage.create_storage_object(filename).get()
 	with data:
 		for event in data.value:

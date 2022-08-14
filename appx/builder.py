@@ -6,8 +6,7 @@ from core.messenger.vk.messenger        import VkMessenger
 from core.event                         import EventManager
 from core.commands.context 		        import CommonData, Context
 from core.resources                     import LanguageResource
-from core.xtime                         import set_timezone
-from core.updater                       import Updater
+import core.updater                     as _u
 
 import appx.command_list
 import appx.events
@@ -38,17 +37,19 @@ class AppBuilder:
         # AppData variables
         self._app               = CommonData()
         self._app.lang          = LanguageResource(lang)
-        self._app.updater       = Updater()
+        self._app.updater       = _u.Updater()
 
         appx.command_list.attach()
 
     def get(self) -> _Application:
+        """ :return: Возвращает объект приложения """
         if self._event_loader:
             self._event_loader(Context(self._app))
         return _Application(self._app)
 
     @property
     def auth(self):
+        """ :return: SafeVariable объект, содержащий данные аутентификации """
         return self._auth
 
     @staticmethod
@@ -64,13 +65,17 @@ class AppBuilder:
         self.use_storage(YandexStorageManager(self._data["dst"], token))
 
     def use_storage(self, storage):
+        """ Инициализирует хранилище и настраивает мессенджеры
+
+        :param storage: :class:`core.storage.cls.IStorageManager`
+        """
         if not storage.create():
             raise Exception(self._app.lang["INIT_FAILED"])
         self._app.storage = storage
         self._auth = storage.create_storage_object("auth.json").get()
         with self._auth:
-            set_timezone(self._auth["timezone"])
-            # инициализация мессенджеров
+            _u.G_TIMEZONE = self._auth["timezone"]
+            # Инициализация мессенджеров
             # СЮДА ДОБАВИТЬ ДРУГИЕ МЕССЕНДЖЕРЫ, ЕСЛИ ТО БУДЕТ ТРЕБОВАТЬСЯ
             cls = [VkMessenger, DiscordMessenger]
             for cfg in self._auth["messengers"]:
@@ -79,7 +84,7 @@ class AppBuilder:
                 self._app.messengers += [msgr]
 
     def use_debug(self):
-        # инициализация класса для отладки
+        """ Инициализация объекта для вывода логов и отладки """
         out = self._app.storage.create_storage_object(self._data["log"], False)
         with self._auth:
             core.debug.init(out)
@@ -87,6 +92,10 @@ class AppBuilder:
         core.debug.get().log(self._app.lang["INIT"], True)
 
     def use_events(self):
+        """
+        Создает объект менеджера событий и устанавливает обработчик загрузки
+        событий
+        """
         self._event_loader = appx.events.loader
         self._app.events   = EventManager(self._app.updater)
 

@@ -10,6 +10,7 @@ class AsyncVkLongPoll(VkBotLongPoll):
         super().__init__(vk, group_id, wait)
         self.session = aiohttp.ClientSession()
 
+    # Проверка есть ли сообщения в чатах
     async def check(self):
         values = {
             'act': 'a_check',

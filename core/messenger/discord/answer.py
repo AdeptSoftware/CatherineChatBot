@@ -1,23 +1,30 @@
 #
-from core.messenger.answer import IAnswer
+from core.messenger.answer  import IAnswer
+from discord                import File
+
+import requests
+import io
 
 # ========= ========= ========= ========= ========= ========= ========= =========
 
 class DiscordAnswer(IAnswer):
     def __init__(self, chat_id):
         self._text      = ""
-        self._embeds    = []
+        self._embed     = None
+        self._files     = []
         self._reply     = False
         self._chat_id   = chat_id
+        self._links     = []
 
     def get(self):
         if not self._text and \
-           not self._embeds:
+           not self._embed:
             return None
 
         return {
-            "embeds":   self._embeds,
-            "text":     self._text,
+            "embed":    self._embed,
+            "files":    self._files,
+            "text":     self._text + '\n' + "\n".join(self._links),
             "reply":    self._reply,
             "chat_id":  self._chat_id
         }
@@ -26,23 +33,27 @@ class DiscordAnswer(IAnswer):
         self._text += text
         return None
 
-    # Не поддерживается
-    def set_sticker(self, sticker_id):
-        return None
+    def set_image(self, url):
+        self.set_document(url, url.split('/')[-1])
 
-    def set_image(self, image):
-        return None
-
-    # Не поддерживается
-    def set_document(self, doc):
-        return None
-
-    # Не поддерживается
-    def set_audio(self, audio):
+    def set_document(self, url, filename=None):
+        response = requests.get(url=url)
+        if response.status_code == 200:
+            file = io.BytesIO(response.content)
+            self._files += [File(fp=file, filename=filename)]
         return None
 
     # Не поддерживается
-    def set_video(self, video):
+    def set_audio(self, url):
+        return None
+
+    def set(self, **kwargs):
+        if "embed" in kwargs:
+            self._embed = kwargs["embed"]
+        return None
+
+    def set_video(self, url):
+        self._links += [url]
         return None
 
     def reply(self):

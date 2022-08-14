@@ -42,15 +42,16 @@ class VkAnswer(IAnswer):
             return r_string
         return None
 
-    def set_sticker(self, sticker_id):
-        self._sticker_id = sticker_id
+    def set(self, **kwargs):
+        if "sticker_id" in kwargs:
+            self._sticker_id = kwargs["sticker_id"]
         return None
 
     def set_image(self, image):
         return self._set_attachment(image)
 
-    def set_document(self, doc):
-        return self._set_attachment(doc)
+    def set_document(self, url, filename=None):
+        return self._set_attachment(url)
 
     def set_audio(self, audio):
         return self._set_attachment(audio)

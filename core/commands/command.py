@@ -63,6 +63,11 @@ class CommandNode:
         return self._condition(ctx)
 
     def find(self, ctx):
+        """ Поиск CommandNode, который даст ответ на сообщение
+
+        :param ctx: :class: `core.commands.context.Context`
+        :return: None or CommandNode object
+        """
         for node in self._nodes:
             if node.check(ctx):
                 return node
@@ -71,6 +76,10 @@ class CommandNode:
         return None
 
     def get(self, ctx):
+        """
+        :param ctx: :class: `core.commands.context.Context`
+        :return: Возвращает строку-ответ
+        """
         if self._has_string_key_answer:
             ctx.ans.set_text(ctx.app.lang.rnd(self._answer))
             return True
@@ -79,9 +88,14 @@ class CommandNode:
 # ======== ========= ========= ========= ========= ========= ========= =========
 
 class Command:
-    # remember_time - сколько секунд команда будет запомненной
     def __init__(self, node, access_type=0, remember_time=60, name=""):
-        self._access_type   = access_type       # см.выше
+        """
+        :param node: :class: `core.commands.command.CommandNode`
+        :param access_type: тип доступа пользователя к команде
+        :param remember_time: сколько секунд команда будет запомненной
+        :param name: имя команды
+        """
+        self._access_type   = access_type       # см. в начале файла
         self.__name__       = name
         self._remember_time = remember_time
         self._node          = node
@@ -108,6 +122,7 @@ class SVCommand:
         self._cmd           = cmd
 
     def has_access(self, user_access_type):
+        """ Проверка уровня доступа пользователя к команде """
         with self._cmd:
             if self._cmd.access_type == ACCESS_ADMIN:
                 return user_access_type >= ACCESS_MODERATOR
@@ -131,6 +146,12 @@ class SVCommand:
                 self._user_list.pop(user_id)
 
     def status(self, now, user_id):
+        """ Проверка статуса команды для текущего пользователя
+
+        :param now: текущее время (timestamp)
+        :param user_id: ID пользователя
+        :return: Код-статус, обозначающий готовность команды
+        """
         with self._cmd:
             flag1 = self._cmd.access_type == ACCESS_OCCUPIED
             if self._cmd.access_type == ACCESS_ALL_AT_ONCE:
@@ -148,6 +169,7 @@ class SVCommand:
             return COMMAND_READY
 
     def check(self, ctx: Context):
+        """ Поиск ответа среди команд """
         count = 0
         from_id = 0
         with self._cmd:
@@ -164,6 +186,7 @@ class SVCommand:
         if node and node.get(ctx):
             with self._user_list:         # [0]       [1]        [2]
                 self._user_list[from_id] = (node, time.time(), count+1)        #
+            return True
         return False
 
 """ # В более привычном виде. Переделал, чтобы исключить возможность блокировки

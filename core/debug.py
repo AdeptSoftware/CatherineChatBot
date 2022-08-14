@@ -3,8 +3,6 @@ import core.updater
 import traceback
 import sys
 
-from core.xtime import time
-
 # ======== ========= ========= ========= ========= ========= ========= =========
 
 _G_OUTPUT_CONSOLE = True  # Дополнительно выводить логи в консоль
@@ -17,9 +15,9 @@ class _Debug:
         self._so    = storage_object
         self._last  = None
 
-    # Выводит текст в логи
     def log(self, text, ignore_console=False):
-        text = time().strftime("[%Y-%m-%d %H:%M:%S]: ") + text
+        """ Выводит текст в логи """
+        text = core.updater.time().strftime("[%Y-%m-%d %H:%M:%S]: ") + text
         try:
             out = self._so.get()
             with out:
@@ -31,9 +29,9 @@ class _Debug:
             text += "\n" + str(exc)
         print(text)
 
-    # Собираем всю доступную информацию и сохраняет в логах
-    # Если ошибка повторилась, то повторной отправки не будет
     def err(self, data=None):
+        """ Собираем всю доступную информацию и сохраняет в логах.
+            Если ошибка повторилась, то повторной отправки не будет """
         exc_type, exc_value, exc_traceback = sys.exc_info()
         string = str(exc_value) + "\n"
         for frame in traceback.extract_tb(exc_traceback):

@@ -7,13 +7,14 @@ class IAnswer:
     def set_text(self, text):
         pass
 
-    def set_sticker(self, sticker_id):
+    # Специфическое
+    def set(self, **kwargs):
         pass
 
     def set_image(self, image):
         pass
 
-    def set_document(self, doc):
+    def set_document(self, url, filename=None):
         pass
 
     def set_audio(self, audio):

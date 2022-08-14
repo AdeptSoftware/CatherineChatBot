@@ -4,10 +4,10 @@ import core.commands.command as _cmd
 # ======== ========= ========= ========= ========= ========= ========= =========
 
 def hello(ctx: _cmd.Context):
-    return ctx.msg.contain(ctx.app.lang["$HELLO"])
+    return ctx.msg.contain(ctx.lang["$HELLO"])
 
 def goodbye(ctx: _cmd.Context):
-    return ctx.msg.contain_phrase(ctx.app.lang["#GOODBYE"])
+    return ctx.msg.contain_phrase(ctx.lang["#GOODBYE"])
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 # Answer_key - ключи в json-файле, хранящем строки локализации

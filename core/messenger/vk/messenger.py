@@ -1,11 +1,10 @@
 #
 from core.messenger.messenger           import AbstractMessenger, TYPE_VK
-from core.updater                       import SafeVariable
-
 from core.messenger.vk.message          import VkMessage
 from core.messenger.vk.answer           import VkAnswer
 
 from core.wrappers.vk_async_longpoll    import AsyncVkLongPoll, VkBotEventType
+from core.updater                       import SafeVariable
 from vk_api                             import VkApi
 
 # ======== ========= ========= ========= ========= ========= ========= =========
@@ -13,9 +12,9 @@ from vk_api                             import VkApi
 class _VkMethodCaller:
     def __init__(self, updater, token, group_id, wait, version="5.131"):
         updater.append(self._update)
-        self._queue             = SafeVariable([])
-        self._api               = VkApi(token=token, api_version=version)
-        self._longpoll          = AsyncVkLongPoll(self._api, group_id, wait)
+        self._queue     = SafeVariable([])
+        self._api       = VkApi(token=token, api_version=version)
+        self._longpoll  = AsyncVkLongPoll(self._api, group_id, wait)
 
     def longpoll(self):
         return self._longpoll

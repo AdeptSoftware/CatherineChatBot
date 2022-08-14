@@ -15,7 +15,7 @@ class AbstractStorageObject:
 		self._path = path
 		self.restore()
 	
-	def get(self):
+	def get(self) -> SafeVariable:
 		return self._obj
 	
 	# save_as - задайте полный путь, чтобы сделать копию файла под другим именем 

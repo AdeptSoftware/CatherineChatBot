@@ -1,6 +1,8 @@
 # Управляет беседой и выдает информацию о ней
 from core.commands.command import SVCommand, get_commands
 
+# ========= ========= ========= ========= ========= ========= ========= =========
+
 class ChatManager:
     def __init__(self, configs):
         self._commands      = None
@@ -52,12 +54,19 @@ class ChatManager:
             if user_id not in self._moderators:
                 self._moderators += [user_id]
 
-    # Если нет cause, то это удаление из черного списка
+    #
     def blacklist(self, user_id, cause=None):
+        """ Добавление/Удаление пользователя из черного списка
+
+        :param user_id: ID пользователя
+        :param cause: строка, если не задана, то удаление пользователя из черного списка
+        """
         if cause is None:
             if user_id in self._blacklist and \
-               self._moderators[user_id] is not None:   # Вариант с вечным блоком
-                self._moderators.pop(user_id)           # (только через редактирование файла)
+               self._moderators[user_id] is not None:
+                self._moderators.pop(user_id)
+            # Если self._moderators[user_id] is None - то это вечный блок
+            # Можно добавить/удалить только через редактирование файла
         else:
             if user_id not in self._blacklist:
                 self._moderators[user_id] = cause
@@ -65,3 +74,5 @@ class ChatManager:
     @property
     def commands(self):
         return self._commands
+
+# ========= ========= ========= ========= ========= ========= ========= =========

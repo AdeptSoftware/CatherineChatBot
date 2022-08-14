@@ -5,27 +5,16 @@ import json
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
-class ProtectedDictionary:
-    def __init__(self, _dict):
-        self._data = _dict
+class LanguageResource:
+    def __init__(self, filename, encoding="utf-8"):
+        with open(filename, 'r', encoding=encoding) as f:
+            self._data = json.loads(f.read().encode(encoding))
+        # Корректировка значений
+        _msg.set_catherine_names(self._data["CATHERINE"])
+        self._split()
 
     def __getitem__(self, key):
         return self._data[key]
-
-# ======== ========= ========= ========= ========= ========= ========= =========
-
-class Resource(ProtectedDictionary):
-    def __init__(self, filename, encoding="utf-8"):
-        with open(filename, 'r', encoding=encoding) as f:
-            super().__init__(json.loads(f.read().encode(encoding)))
-
-# ======== ========= ========= ========= ========= ========= ========= =========
-
-class LanguageResource(Resource):
-    def __init__(self, filename, encoding="utf-8"):
-        super().__init__(filename, encoding)
-        _msg.set_catherine_names(self._data["CATHERINE"])
-        self._split()
 
     # Вернёт одну из строк в списке
     def rnd(self, key):

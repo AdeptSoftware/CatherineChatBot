@@ -53,24 +53,25 @@ class AbstractMessage(IMessage):
 
     # ==== ========= ========= ========= ========= ========= ========= =========
 
-    # Вернет строку, как обращаются к нам
     @property
     def appeal(self):
+        """ Вернет строку, как обращаются к нам """
         self._check()
         return self._appeal
 
-    # Вернёт разбитое на слова сообщение
     @property
     def words(self):
+        """ Вернёт разбитое на слова сообщение """
         self._check()
         return self._words
 
-    # Вернёт символы перед сообщением
     @property
     def prefix(self):
+        """ Вернёт символы перед сообщением """
         self._check()
         return self._prefix
 
+    # Подготавливает сообщение к дальнейшему использованию
     def __prepare(self):
         self._words  = []
         self._appeal = []
@@ -102,6 +103,7 @@ class AbstractMessage(IMessage):
 
     @property
     def lower(self):
+        """ Вернёт разбитое на слова сообщение в lowercase формате """
         return self.__lower()
 
     # создание lowercase версии self._words
@@ -114,12 +116,12 @@ class AbstractMessage(IMessage):
             self._lower = tuple(self._lower)
         return self._lower
 
-    # Определение конца каждого предложения
     @property
     def sentences(self):
+        """ Определение конца каждого предложения """
         return self.__sentences()
 
-    # Определение границ предложений + конвертируем в lower case
+    # Определение границ предложений
     def __sentences(self):
         if self._sentences is None:
             self._check()
@@ -183,8 +185,12 @@ class AbstractMessage(IMessage):
             pos = self._sentences[i]
         return _list
 
-    # words - должен содержать lowercase слова
     def contain(self, words):
+        """ Проверка содержит ли сообщение определенные слова
+
+        :param words: список слов в lowercase формате
+        :return: True/False
+        """
         self.__lower()
         for word in words:
             if word in self._lower:
@@ -193,6 +199,12 @@ class AbstractMessage(IMessage):
 
     # phrases - должен содержать lowercase фразы
     def contain_phrase(self, phrases):
+        """ Проверка содержит ли сообщение определенные фразы
+
+        :param phrases: список фраз в lowercase формате.
+            phrase состоит из списка слов
+        :return: True/False
+        """
         _list = self.__lower()
         _lenL = len(_list)
         for i in range(0, _lenL):

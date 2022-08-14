@@ -1,5 +1,6 @@
 # Класс, обновляющий различные данные
 import threading
+import datetime
 import asyncio
 
 # ======== ========= ========= ========= ========= ========= ========= =========
@@ -61,15 +62,24 @@ class SafeVariable:
 
     # Другие операции добавлю по мере необходимости...
 
-# ======== ========= ========= ========= ========= ========= ========= =========
 
-async def sleep(sec):
-    await asyncio.sleep(sec)
+# ======== ========= ========= ========= ========= ========= ========= =========
 
 def _default_on_error_handler(data=None): print("Error: " + str(data))
 
-# Глобальные обработчики событий:
-G_ON_ERROR = _default_on_error_handler
+G_ON_ERROR = _default_on_error_handler           # Глобальный обработчик событий
+G_TIMEZONE = 0                                   # Use: core.updater.G_TIMEZONE
+
+# ======== ========= ========= ========= ========= ========= ========= =========
+
+def time():
+    return datetime.datetime.now() + datetime.timedelta(hours=G_TIMEZONE)
+
+def timezone():
+    return G_TIMEZONE
+
+async def sleep(sec):
+    await asyncio.sleep(sec)
 
 # ======== ========= ========= ========= ========= ========= ========= =========
 
@@ -80,8 +90,8 @@ class Updater:
         self._loop      = asyncio.new_event_loop()
         self._exit      = True
 
-    # Запуск будет осуществлен в текущем потоке
     def run(self):
+        """ Запуск с блокированием текущего потока """
         if self._exit:
             self._exit = False
             self._loop.run_until_complete(self._updater())
@@ -122,9 +132,16 @@ class Updater:
     def loop(self):
         return self._loop
 
-    # callback должен быть async функцией и возвращать True/False
-    # True - использовать повторно. False - удалить из списка
     def append(self, callback):
+        """ Присоединяет новый callback к списку задач
+
+        :param callback: функция: async fn() -> boolean.
+
+        Если функция вернёт:
+
+        True - функция будет использована повторно
+        False - функция будет удалена после выполнения
+        """
         with self._tasks:
             self._tasks += [[callback, True]]
 
