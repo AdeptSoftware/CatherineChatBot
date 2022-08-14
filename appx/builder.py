@@ -8,7 +8,6 @@ from core.commands.context 		        import CommonData, Context
 from core.resources                     import LanguageResource
 import core.updater                     as _u
 
-import appx.command_list
 import appx.events
 
 import core.debug
@@ -38,8 +37,6 @@ class AppBuilder:
         self._app               = CommonData()
         self._app.lang          = LanguageResource(lang)
         self._app.updater       = _u.Updater()
-
-        appx.command_list.attach()
 
     def get(self) -> _Application:
         """ :return: Возвращает объект приложения """

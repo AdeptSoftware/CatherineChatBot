@@ -4,11 +4,14 @@ from core.messenger.message import AbstractMessage
 # ========= ========= ========= ========= ========= ========= ========= =========
 
 class DiscordMessage(AbstractMessage):
-    def __init__(self, ctx, bot_id):
+    def __init__(self, ctx, bot_id, fwd=True):
         super().__init__()
         self._me   = bot_id
         self._ctx  = ctx
         self._fwd  = []                  # Не поддерживается
+
+        if fwd and self._ctx.reference:
+            self._fwd += [DiscordMessage(self._ctx.reference.resolved, bot_id, False)]
 
     def is_me(self):
         return self._me == self._ctx.author.id
